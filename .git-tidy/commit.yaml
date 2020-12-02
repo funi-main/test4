@@ -20,3 +20,11 @@
   condition: ['!=', 'type', 'trivial']
   multiline: True
   required: False
+
+- label: jira
+  name: Jira
+  help: Jira ticker number
+  type: string
+  matches: '^TS-\d{3}$'
+  condition: ['!=', 'type', 'trivial']
+  multiline: False

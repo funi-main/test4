@@ -9,3 +9,4 @@
 # An in-depth description of the changes.
 #
 # Type: The type of change.
+# Jira: Jira ticker number
