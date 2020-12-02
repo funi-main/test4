@@ -1,0 +1,62 @@
+version: 2.1
+
+executors:
+  python:
+    working_directory: ~/test4
+    docker:
+      - image: jyve/circleci-public-python-library
+
+jobs:
+  test:
+    executor: python
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-{{ checksum "poetry.lock" }}
+      - run: make ci_setup
+      - run: make test
+      - save_cache:
+          key: v1-{{ checksum "poetry.lock" }}
+          paths:
+            - /home/circleci/.local
+            - /home/circleci/.cache/pypoetry/virtualenvs
+            - /home/circleci/.cache/pipx
+            - /home/circleci/test4/.tox
+
+  lint:
+    executor: python
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-{{ checksum "poetry.lock" }}
+      - run: make ci_setup
+      - run: make lint
+
+  check_changelog:
+    executor: python
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-{{ checksum "poetry.lock" }}
+      - run: make ci_setup
+      - run: make check_changelog
+
+workflows:
+  version: 2
+  on_commit:
+    jobs:
+      - test
+      - lint:
+          context: private-python-library-template
+      - check_changelog:
+          filters:
+            branches:
+              ignore: master
+      # - deploy:
+      #     context: private-python-library
+      #     requires:
+      #       - test
+      #       - lint
+      #     filters:
+      #       branches:
+      #         only: master
